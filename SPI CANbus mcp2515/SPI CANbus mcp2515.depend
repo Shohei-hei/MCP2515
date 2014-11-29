@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1417236802 source:c:\users\shohei\documents\github\mcp2515\spi canbus mcp2515\main.c
+	<stdio.h>
+	"mcp2515.h"
+	"state.h"
+
+1417237141 c:\users\shohei\documents\github\mcp2515\spi canbus mcp2515\mcp2515.h
+	<stdio.h>
+
+1417236656 c:\users\shohei\documents\github\mcp2515\spi canbus mcp2515\state.h
+
