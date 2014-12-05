@@ -3,7 +3,7 @@
 #include "state.h"
 
 void main(){
-    unsigned char send_data;
+    unsigned int send_data;
 
     //CANSETMODE(CAN_MODE_SLEEP);  //スリープモード
     //CANSETMODE(CAN_MODE_LISTEN);  //リッスンオンリーモード
@@ -14,7 +14,7 @@ void main(){
 
         send_data = 12;
 
-        DATAFLAMEB0(send_data,0x07FF,1,3);
+        DATAFLAMEB0(send_data,0x07FF,4,3);
         State_interrupt();
     }
 }

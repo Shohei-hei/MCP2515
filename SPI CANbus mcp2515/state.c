@@ -2,13 +2,6 @@
 #include "mcp2515.h"
 #include "state.h"
 
-/******************************************************************************
-*	タイトル ： MPC2515の初期設定
-*	  関数名 ： CANset
-*	    引数 ： なし
-*	  作成者 ： 佐藤翔平
-*	  作成日 ： 2014/12/05
-******************************************************************************/
 void CANset(){
     CANSETMODE(CAN_MODE_CONFIG);  //コンフィギュレーションモード
 
@@ -51,7 +44,7 @@ void Make_rx(unsigned char *dat,unsigned char *data,unsigned char cnt){
     }
 }
 
-void Make_tx(unsigned char *data,unsigned char dat,unsigned char cnt){
+void Make_tx(unsigned char *data,unsigned int dat,unsigned char cnt){
     unsigned char p;
     for(p=0;p<cnt;p++){
         data[p] = (unsigned char)dat;
@@ -112,7 +105,7 @@ void TEC_errer(void){
     }
 }
 
-void Msgsendb0(unsigned char data,unsigned short msgid,unsigned char mode,unsigned char dlength,unsigned char rnk){
+void Msgsendb0(unsigned int data,unsigned short msgid,unsigned char mode,unsigned char dlength,unsigned char rnk){
     unsigned char msgbuf[6] = {0};
     unsigned char datbuf[8] = {0};
     unsigned char ctrl = 0;

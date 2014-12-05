@@ -9,7 +9,7 @@ void Make_rx(unsigned char *dat,unsigned char *data,unsigned char cnt);
 void Make_tx(unsigned char *data,unsigned char dat,unsigned char cnt);
 void REC_errer(void);
 void TEC_errer(void);
-void Msgsendb0(unsigned char data,unsigned short msgid,unsigned char mode,unsigned char dlength,unsigned char rnk);
+void Msgsendb0(unsigned int data,unsigned short msgid,unsigned char mode,unsigned char dlength,unsigned char rnk);
 void State_interrupt(void);
 
 #endif // STATE_H_INCLUDED
