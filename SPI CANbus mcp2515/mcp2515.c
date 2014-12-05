@@ -1,10 +1,18 @@
 #include <stdio.h>
 #include "mcp2515.h"
 
+//--------------------------------------------------------
+//
+//  mcp2515に関する関数たち
+//
+//  編集されることを望みません
+//
+//--------------------------------------------------------
+
 //SPI送受信関数
 unsigned char SPI_txrx(unsigned char Tx_data,unsigned char cmd){
-    unsigned char i;
-    unsigned char Rx_data;
+    unsigned char i = 0;
+    unsigned char Rx_data = 0;
     CAN_SPI_SO = 0;
     CAN_SPI_SCK = 0;
     if(cmd == WRITE){
@@ -45,8 +53,8 @@ void CANwritereg(unsigned char adrs,unsigned char data){
 }
 //CAN送/受信バッファ　シーケンシャル・リード/ライト 共有
 void CANtxrxbufrw(unsigned char inst,unsigned char readop,unsigned char *data,unsigned char cnt){
-    unsigned char dat;
-    unsigned char p;
+    unsigned char dat = 0;
+    unsigned char p = 0;
     CAN_SPI_CS = 0;
     SPI_TxRx(inst,WRITE);
     if(readop == READ){
@@ -80,7 +88,7 @@ void CANsetsidfiltermask(unsigned char adrs,unsigned short sid){
 }
 //レジスタ・リード共有ルーチン
 unsigned char CANregread2b(unsigned char inst,unsigned char adrs){
-    unsigned char dat;
+    unsigned char dat = 0;
     CAN_SPI_CS = 0;
     SPI_TxRx(inst,WRITE);
     SPI_TxRx(adrs,WRITE);
@@ -101,7 +109,7 @@ void CANsetrts(unsigned char inst){
     CAN_SPI_CS = 1;
 }
 //CAN受信チェック
-unsigned char CANrxcheck(unsigned char rxbnum){
+/*unsigned char CANrxcheck(unsigned char rxbnum){
     unsigned char rxstat;
     rxstat = CANReadRXStat();
     if(rxbnum == 0){
@@ -110,7 +118,7 @@ unsigned char CANrxcheck(unsigned char rxbnum){
         return (rxstat & (1<<MsgRXB1));
     }
     return (rxstat & ((1<<MsgRXB0))|(1<<MsgRXB1));
-}
+}*/
 //CANコントローラ初期化
 void CANinit(unsigned char brp){
     CANSetBRP(brp);

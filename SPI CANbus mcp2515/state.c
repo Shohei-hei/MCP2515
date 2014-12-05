@@ -2,6 +2,48 @@
 #include "mcp2515.h"
 #include "state.h"
 
+/******************************************************************************
+*	タイトル ： MPC2515の初期設定
+*	  関数名 ： CANset
+*	    引数 ： なし
+*	  作成者 ： 佐藤翔平
+*	  作成日 ： 2014/12/05
+******************************************************************************/
+void CANset(){
+    CANSETMODE(CAN_MODE_CONFIG);  //コンフィギュレーションモード
+
+    CANinit(CAN_BRP_20MHZ_1MBPS);
+    CANSETSJW(1);
+    CANSETBTLMODE();
+    CANSETPHSEG(2);
+    CANSETPHSEG1(2);
+    CANSETPHSEG2(2);
+    CANRX0IE_PERMIT();
+    CANRX1IE_PERMIT();
+    CANTX0IE_PERMIT();
+    CANTX1IE_PERMIT();
+    CANTX2IE_PERMIT();
+    CANERRIE_PERMIT();
+    CANWAKIE_FORBID();
+    CANMERRE_PERMIT();
+    CANB0RTSM_OFF();
+    CANB1RTSM_OFF();
+    CANB2RTSM_OFF();
+
+    CANSETFILTERRXB0(CAN_RXBnCTRL_MODE_STDON);
+    CANSETFILTERRXB1(CAN_RXBnCTRL_MODE_STDON);
+
+    CANSETSIDFILTER0(0x0111);
+    CANSETSIDFILTER1(0x0222);
+    CANSETSIDFILTER2(0x0333);
+    CANSETSIDFILTER3(0x0444);
+    CANSETSIDFILTER4(0x0555);
+    CANSETSIDFILTER5(0x0666);
+
+    CANSETSIDMASK0(MASK_SID_NOT);   //完全フィルタ一致
+    CANSETSIDMASK1(MASK_SID_NOT);   //完全フィルタ一致
+}
+
 void Make_rx(unsigned char *dat,unsigned char *data,unsigned char cnt){
     unsigned char p;
     for(p=0;p<cnt;p++){
@@ -71,13 +113,14 @@ void TEC_errer(void){
 }
 
 void Msgsendb0(unsigned char data,unsigned short msgid,unsigned char mode,unsigned char dlength,unsigned char rnk){
-    unsigned char msgbuf[6] = {0,0,0,0,0,0};
-    unsigned char datbuf[8] = {0,0,0,0,0,0,0,0};
+    unsigned char msgbuf[6] = {0};
+    unsigned char datbuf[8] = {0};
+    unsigned char ctrl = 0;
+    unsigned char dlc = 0;
+    unsigned char check_ctrl = 0;
+    unsigned char i = 0;
     struct TXBnCTRL_t *pctrl;
     struct TXBnDLC_t *pdlc;
-    unsigned char ctrl,dlc;
-    unsigned char check_ctrl;
-    unsigned char i;
 
     pdlc = (struct TXBnDLC_t *)&dlc;
     pctrl = (struct TXBnCTRL_t *)&ctrl;
@@ -115,7 +158,6 @@ void Msgsendb0(unsigned char data,unsigned short msgid,unsigned char mode,unsign
 
         CANSetRTS(SPI_INST_RTS_TXB0);
 
-        check_ctrl = 0;
         check_ctrl = CANReadReg(CAN_ADRS_TXB0_CTRL);
 
         if((check_ctrl&0x10) == 0x10){   //送信中にバスエラーが発生
@@ -129,23 +171,21 @@ void Msgsendb0(unsigned char data,unsigned short msgid,unsigned char mode,unsign
 }
 
 void State_interrupt(void){
-    unsigned char rcv_id[6];
-    unsigned char rcv_dat[8];
-    unsigned char rx0_data;
-    unsigned char rx1_data;
-    unsigned short msgid;
-    unsigned char dlc;
-    unsigned char intf;
-    unsigned char check_rxstat;
+    unsigned char rcv_id[6] = {0};
+    unsigned char rcv_dat[8] = {0};
+    unsigned char rx0_data = 0;
+    unsigned char rx1_data = 0;
+    unsigned short msgid = 0;
+    unsigned char dlc = 0;
+    unsigned char intf = 0;
+    unsigned char check_rxstat = 0;
 
     REC_Errer();
 
-    intf = 0;
     intf = CANREADSTAT();
 
     if((intf&0x01) == 0x01){    //受信バッファ0フル割り込み
 
-        check_rxstat = 0;
         check_rxstat = CANREADRXSTAT();
 
         if((check_rxstat&0x18) == 0x18){   //拡張リモートフレーム
@@ -162,7 +202,6 @@ void State_interrupt(void){
 
             CANRXB0BUFDATREAD(&rcv_dat[0],dlc);
 
-            rx0_data = 0;
             Make_rx(&rx0_data,&rcv_dat[0],dlc);
 
             if(msgid == 0x0111){
@@ -173,15 +212,11 @@ void State_interrupt(void){
         }
     }else if((intf&0x02) == 0x02){  //受信バッファ1フル割り込み
 
-        check_rxstat = 0;
         check_rxstat = CANREADRXSTAT();
 
         if((check_rxstat&0x18) == 0x18){   //拡張リモートフレーム
-
         }else if((check_rxstat&0x10) == 0x10){ //拡張データフレーム
-
         }else if((check_rxstat&0x08) == 0x08){ //標準リモートフレーム
-
         }else if((check_rxstat&0x00) == 0x00){  //標準データフレーム
 
             rcv_id[0] = CANREADREG(CAN_ADRS_RXB1_CTRL);
@@ -193,7 +228,6 @@ void State_interrupt(void){
 
             CANRXB1BUFDATREAD(&rcv_dat[0],dlc);
 
-            rx1_data = 0;
             Make_data(&rx1_data,&rcv_dat[0],dlc);
 
             if(msgid == 0x0333){

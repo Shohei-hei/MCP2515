@@ -1,5 +1,5 @@
-#ifndef MCP2515_H_INCLUDED
-#define MCP2515_H_INCLUDED
+#ifndef MCP2515_H
+#define MCP2515_H
 
 //------------------------------------------------------------------------------
 //ビットモディファイに関して
@@ -13,11 +13,11 @@
 //------------------------------------------------------------------------------
 
 //SPIポートの操作定義
-#define CAN_SPI_CS //SPIのCS(SS)ピンに設定
-#define CAN_SPI_SO //SPIのSOピンに設定
-#define CAN_SPI_SCK //SPIのSCKピンに設定
+#define CAN_SPI_CS B0//SPIのCS(SS)ピンに設定
+#define CAN_SPI_SO B1//SPIのSOピンに設定
+#define CAN_SPI_SCK B2//SPIのSCKピンに設定
 
-#define CAN_SPI_SI //SPIのSIピンに設定
+#define CAN_SPI_SI B3//SPIのSIピンに設定
 
 
 
