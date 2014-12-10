@@ -2,10 +2,12 @@
 #include "mcp2515.h"
 #include "state.h"
 
+extern unsigned int g_send_data;
+
 void CANset(){
     CANSETMODE(CAN_MODE_CONFIG);  //コンフィギュレーションモード
 
-    CANinit(CAN_BRP_20MHZ_1MBPS);
+    CANinit(CAN_BRP_20MHZ_500kBPS);
     CANSETSJW(1);
     CANSETBTLMODE();
     CANSETPHSEG(2);
@@ -166,7 +168,7 @@ void Msgsendb0(unsigned int data,unsigned short msgid,unsigned char mode,unsigne
 void State_interrupt(void){
     unsigned char rcv_id[6] = {0};
     unsigned char rcv_dat[8] = {0};
-    unsigned char rx0_data = 0;
+    unsigned int rx0_data = 0;
     unsigned char rx1_data = 0;
     unsigned short msgid = 0;
     unsigned char dlc = 0;
@@ -184,6 +186,17 @@ void State_interrupt(void){
         if((check_rxstat&0x18) == 0x18){   //拡張リモートフレーム
         }else if((check_rxstat&0x10) == 0x10){ //拡張データフレーム
         }else if((check_rxstat&0x08) == 0x08){ //標準リモートフレーム
+
+            rcv_id[0] = CANREADREG(CAN_ADRS_RXB0_CTRL);
+
+            //SPIインストラクションにより自動的に受信バッファ０フラグクリア
+            CANRXB0BUFMSGREAD(&rcv_id[1]);
+            msgid = MAKE_SID(rcv_id[1],rcv_id[2]);  //識別子作成
+
+            if(msgid == 0x111){
+                DATAFLAMEB0(g_send_data,0x0111,4,3);
+            }
+
         }else if((check_rxstat&0x00) == 0x00){  //標準データフレーム
 
             rcv_id[0] = CANREADREG(CAN_ADRS_RXB0_CTRL);

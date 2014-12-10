@@ -6,7 +6,7 @@
 
 void CANset(void);
 void Make_rx(unsigned char *dat,unsigned char *data,unsigned char cnt);
-void Make_tx(unsigned char *data,unsigned char dat,unsigned char cnt);
+void Make_tx(unsigned char *data,unsigned int dat,unsigned char cnt);
 void REC_errer(void);
 void TEC_errer(void);
 void Msgsendb0(unsigned int data,unsigned short msgid,unsigned char mode,unsigned char dlength,unsigned char rnk);
